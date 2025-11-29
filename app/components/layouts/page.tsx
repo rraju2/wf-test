@@ -8,6 +8,8 @@ import FourColumnLayout from './FourColumnLayout';
 import FiveColumnLayout from './FiveColumnLayout';
 import SixColumnLayout from './SixColumnLayout';
 import LayoutTabs, { LayoutType } from '../LayoutTabs';
+import { ClinicalTrialForm } from './ClinicalTrialForm';
+import { Toaster } from '@/components/ui/toaster';
 
 // Mock function to fetch page-specific data
 async function getPageData(menuItem: string) {
@@ -32,12 +34,27 @@ export default function Page({ params }: PageProps) {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        setIsLoading(true);
-        getPageData(params.menuItem).then(pageData => {
-            setData(pageData);
-            setIsLoading(false);
-        });
+        // If we are not on the create-study page, fetch data as before
+        if (params.menuItem !== 'create-study') {
+            setIsLoading(true);
+            getPageData(params.menuItem).then(pageData => {
+                setData(pageData);
+                setIsLoading(false);
+            });
+        } else {
+            setIsLoading(false); // No data to load for the form page
+        }
     }, [params.menuItem]);
+
+    // If the route is for creating a study, render the form directly.
+    if (params.menuItem === 'create-study') {
+        return (
+            <div className="flex flex-col items-center justify-center p-4 md:p-12 bg-slate-50 dark:bg-background">
+                <ClinicalTrialForm />
+                <Toaster />
+            </div>
+        );
+    }
 
     const pageContent = (
         <div>
